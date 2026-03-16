@@ -1,5 +1,14 @@
 import { EmissionFactor } from '../types';
 
+/**
+ * In-memory emission factor dataset.
+ *
+ * In production, this data lives in a database and is managed by the sustainability team.
+ * Factors are sourced from official databases (e.g., DEFRA, IEA) and updated annually.
+ *
+ * Note: Some activity types have region-specific factors (electricity varies by country),
+ * while others use a GLOBAL factor (diesel, flights are roughly the same everywhere).
+ */
 export const EMISSION_FACTORS: EmissionFactor[] = [
   { id: 'ef-1', activityType: 'electricity', factor: 0.485, inputUnit: 'kWh', outputUnit: 'kg CO2e', region: 'DE', validFrom: '2024-01-01', validTo: '2024-12-31' },
   { id: 'ef-2', activityType: 'electricity', factor: 0.233, inputUnit: 'kWh', outputUnit: 'kg CO2e', region: 'FR', validFrom: '2024-01-01', validTo: '2024-12-31' },

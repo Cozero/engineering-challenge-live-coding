@@ -2,7 +2,30 @@ import { EmissionFactorRepository } from './emission-factor.repository';
 
 const repo = new EmissionFactorRepository();
 
+/**
+ * Core calculation engine for converting activity data into CO2e emissions.
+ *
+ * Used by API controllers, bulk import pipelines, and reporting services
+ * to calculate and aggregate emission results for customer organizations.
+ *
+ * The calculation formula is: co2eKg = quantity * emissionFactor
+ * where the emission factor is looked up by activity type and region.
+ */
 export class EmissionCalculator {
+  /**
+   * Calculates CO2e emissions for a list of activity entries.
+   *
+   * For each entry:
+   * 1. Extracts the region from locationId (e.g., "de-berlin-001" -> "DE")
+   * 2. Looks up the emission factor for that activity type + region
+   * 3. Computes co2eKg = quantity * factor
+   *
+   * Entries are processed in chronological order by startDate.
+   * Entries with no matching emission factor are skipped.
+   *
+   * @param entries - Array of activity entries to calculate emissions for
+   * @returns Array of calculation results with CO2e values
+   */
   calculate(entries: any[]): any[] {
     const results: any[] = [];
 
@@ -36,6 +59,15 @@ export class EmissionCalculator {
     return results;
   }
 
+  /**
+   * Calculates emissions and returns aggregated totals.
+   *
+   * Calls calculate() internally, then groups results by activity type
+   * and sums up total CO2e emissions across all entries.
+   *
+   * @param entries - Array of activity entries
+   * @returns Object with total CO2e, breakdown by activity type, and entry count
+   */
   getTotals(entries: any[]): any {
     const results = this.calculate(entries);
 
